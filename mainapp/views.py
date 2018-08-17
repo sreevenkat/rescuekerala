@@ -108,12 +108,18 @@ class RequestFilter(django_filters.FilterSet):
     class Meta:
         model = Request
         # fields = ['district', 'status', 'needwater', 'needfood', 'needcloth', 'needmed', 'needkit_util', 'needtoilet', 'needothers',]
-
         fields = {
                     'district' : ['exact'],
                     'requestee' : ['icontains'],
                     'requestee_phone' : ['exact'],
-                    'location' : ['icontains']
+                    'location' : ['icontains'],
+                    'needwater': ['exact'],
+                    'needfood': ['exact'],
+                    'needcloth': ['exact'],
+                    'needmed': ['exact'],
+                    'needkit_util': ['exact'],
+                    'needtoilet': ['exact'],
+                    
                  }
 
     def __init__(self, *args, **kwargs):
