@@ -12,7 +12,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.auth import logout
 from django.shortcuts import redirect
-from django.db.models import Count
+from django.db.models import Count, Q
 
 class CreateRequest(CreateView):
     model = Request
@@ -105,6 +105,57 @@ def relief_camps(request):
     return render(request, 'mainapp/relief_camps.html', {'filter': filter , 'relief_camps' : relief_camps, 'district_chosen' : len(request.GET.get('district') or '')>0 })
 
 class RequestFilter(django_filters.FilterSet):
+
+    request_need_choices = (
+        ('water', 'Water'),
+        ('food', 'Food'),
+        ('cloth', 'Cloth'),
+        ('medicine', 'Medicine'),
+        ('kitchen_util', 'Kitchen Utensils'),
+        ('toilet', 'Toiletries'),
+        ('rescue', 'Need Rescue'),
+    )
+
+    needs_filter = django_filters.MultipleChoiceFilter(method='filter_by_needs_filter', label="Request Type", choices=request_need_choices, widget=forms.CheckboxSelectMultiple)
+
+    def add_filter_to_filter_string(self, filter_string, new_filter):
+        if filter_string == None:
+            filter_string = new_filter
+        else:
+            filter_string = filter_string | new_filter
+        # print('filter_string',filter_string)
+        return filter_string
+
+    def filter_by_needs_filter(self, queryset, name, value):
+        print("filter_by_needs_filter", name, value)
+        filter_string = None
+        for need in value:
+            if need == 'water':
+                filter_string = self.add_filter_to_filter_string(filter_string, Q(needwater=True))
+
+            if need == 'food':
+                filter_string = self.add_filter_to_filter_string(filter_string, Q(needfood=True))
+
+            if need == 'cloth':
+                filter_string = self.add_filter_to_filter_string(filter_string, Q(needcloth=True))            
+
+            if need == 'medicine':
+                filter_string = self.add_filter_to_filter_string(filter_string, Q(needmed=True))            
+
+            if need == 'kitchen_util':
+                filter_string = self.add_filter_to_filter_string(filter_string, Q(needkit_util=True))            
+
+            if need == 'toilet':
+                filter_string = self.add_filter_to_filter_string(filter_string, Q(needtoilet=True))            
+
+            if need == 'rescue':
+                filter_string = self.add_filter_to_filter_string(filter_string, Q(needrescue=True))            
+
+        if filter_string != '':
+            queryset = queryset.filter(filter_string)
+        # print('queryset.query',queryset.query)
+        return queryset
+
     class Meta:
         model = Request
         # fields = ['district', 'status', 'needwater', 'needfood', 'needcloth', 'needmed', 'needkit_util', 'needtoilet', 'needothers',]
@@ -113,12 +164,12 @@ class RequestFilter(django_filters.FilterSet):
                     'requestee' : ['icontains'],
                     'requestee_phone' : ['exact'],
                     'location' : ['icontains'],
-                    'needwater': ['exact'],
-                    'needfood': ['exact'],
-                    'needcloth': ['exact'],
-                    'needmed': ['exact'],
-                    'needkit_util': ['exact'],
-                    'needtoilet': ['exact'],
+                    # 'needwater': ['icontains'],
+                    # 'needfood': ['icontains'],
+                    # 'needcloth': ['icontains'],
+                    # 'needmed': ['icontains'],
+                    # 'needkit_util': ['icontains'],
+                    # 'needtoilet': ['icontains'],
                     
                  }
 
