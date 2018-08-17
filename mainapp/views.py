@@ -116,7 +116,7 @@ class RequestFilter(django_filters.FilterSet):
         ('rescue', 'Need Rescue'),
     )
 
-    needs_filter = django_filters.MultipleChoiceFilter(method='filter_by_needs_filter', label="Request Type", choices=request_need_choices, widget=forms.CheckboxSelectMultiple(attrs={'style':'list-style: none'}))
+    needs_filter = django_filters.MultipleChoiceFilter(method='filter_by_needs_filter', label="Request Type", choices=request_need_choices, widget=forms.CheckboxSelectMultiple())
 
     def add_filter_to_filter_string(self, filter_string, new_filter):
         if filter_string == None:
